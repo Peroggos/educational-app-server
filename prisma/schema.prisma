@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") 
+ shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  password      String
+  firstName     String
+  lastName      String
+  role          Role           @default(STUDENT)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  testResults   TestResult[]
+  userProgress  UserProgress[]
+  
+  @@map("users")
+}
+
+model Subject {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  topics      Topic[]
+  
+  @@map("subjects")
+}
+
+model Topic {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  subjectId   String
+  subject     Subject   @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  questions   Question[]
+  userProgress UserProgress[]
+  lessons     Lesson[]
+  @@unique([name, subjectId])
+  @@map("topics")
+}
+
+model Question {
+  id            String       @id @default(cuid())
+  text          String       @db.Text
+  options       String[]     
+  correctOption Int          
+  explanation   String?      @db.Text
+  difficulty    Difficulty   @default(MEDIUM)
+  topicId       String
+  topic         Topic        @relation(fields: [topicId], references: [id], onDelete: Restrict)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  
+  testResults   TestResult[]
+  tests         Test[]       @relation("TestQuestions")
+  
+  @@map("questions")
+}
+
+model Test {
+  id          String       @id @default(cuid())
+  name        String
+  description String?      @db.Text
+  timeLimit   Int?         
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  questions   Question[]   @relation("TestQuestions")
+  results     TestResult[]
+  
+  @@map("tests")
+}
+
+model TestResult {
+  id              String       @id @default(cuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  testId          String
+  test            Test         @relation(fields: [testId], references: [id], onDelete: Restrict)
+  score           Int
+  totalQuestions  Int
+  answers         Json         
+  startedAt       DateTime
+  completedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  
+  question        Question?    @relation(fields: [questionId], references: [id])
+  questionId      String?
+  
+  @@map("test_results")
+}
+
+model UserProgress {
+  id                String       @id @default(cuid())
+  userId            String
+  user              User         @relation(fields: [userId], references: [id], onDelete: Restrict)
+  topicId           String
+  topic             Topic        @relation(fields: [topicId], references: [id], onDelete: Restrict)
+  questionsAnswered Int          @default(0)
+  correctAnswers    Int          @default(0)
+  lastPracticed     DateTime     @default(now())
+  
+  @@unique([userId, topicId])
+  @@map("user_progress")
+}
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  content     String   @db.Text
+  order       Int
+  topicId     String
+  topic       Topic    @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  videoUrl    String?
+  duration    Int?     // в минутах
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([topicId, order])
+  @@map("lessons")
+}
+
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
