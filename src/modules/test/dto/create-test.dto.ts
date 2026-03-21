@@ -15,6 +15,6 @@ export class CreateTestDto {
   timeLimit?: number;
 
   @IsArray()
-  @IsUUID('4', { each: true })
+ // @IsUUID('4', { each: true })
   questionIds: string[];
 }

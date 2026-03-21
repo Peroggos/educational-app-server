@@ -4,8 +4,10 @@ export class TestResultEntity {
   testId: string;
   score: number;
   totalQuestions: number;
+  correctAnswers: number;
   answers: any;
   startedAt: Date;
   completedAt: Date | null;
+  timeSpent?: number;
   createdAt: Date;
 }

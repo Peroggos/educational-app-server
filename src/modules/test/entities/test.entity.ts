@@ -3,6 +3,7 @@ export class TestEntity {
   name: string;
   description: string | null;
   timeLimit: number | null;
+  passingScore: number | null;
   createdAt: Date;
   updatedAt: Date;
 }

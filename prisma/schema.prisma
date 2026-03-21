@@ -20,7 +20,7 @@ model User {
   
   testResults   TestResult[]
   userProgress  UserProgress[]
-  
+  userAchievements UserAchievement[]
   @@map("users")
 }
 
@@ -132,6 +132,39 @@ model Lesson {
   @@unique([topicId, order])
   @@map("lessons")
 }
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  icon        String
+  condition   String   // 'questions_answered', 'success_rate', 'tests_completed', 'topics_practiced'
+  threshold   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userAchievements UserAchievement[]
+  
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievementId String
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  unlockedAt    DateTime    @default(now())
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+// Обновите модель User, добавив связь
+
+   // Добавить эту строку
+  
+ 
+
 
 enum Role {
   STUDENT

@@ -1,16 +1,17 @@
-import { IsArray, IsNumber, IsUUID, ValidateNested } from 'class-validator';
+import { IsArray, IsUUID, IsNumber, ValidateNested, Min, Max, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
-class AnswerDto {
-  @IsUUID()
+export class AnswerDto {
+  @IsString()
   questionId: string;
 
   @IsNumber()
+  @Min(0)
   selectedOption: number;
 }
 
 export class SubmitTestDto {
-  @IsUUID()
+ @IsString()
   testId: string;
 
   @IsArray()
