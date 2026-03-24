@@ -14,9 +14,10 @@ import { CreateTopicDto } from './dto/create-topic.dto';
 import { UpdateTopicDto } from './dto/update-topic.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles, Role } from '../common/decorators/roles.decorator'; 
-@UseGuards(JwtAuthGuard, RolesGuard)
+import { Roles, Role } from '../common/decorators/roles.decorator';
+
 @Controller('topics')
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class TopicsController {
   constructor(private readonly topicsService: TopicsService) {}
 
@@ -32,6 +33,12 @@ export class TopicsController {
       return this.topicsService.findBySubject(subjectId);
     }
     return this.topicsService.findAll();
+  }
+
+  @Get('stats/:id')
+  @Roles(Role.ADMIN, Role.TEACHER)
+  getStatistics(@Param('id') id: string) {
+    return this.topicsService.getStatistics(id);
   }
 
   @Get(':id')

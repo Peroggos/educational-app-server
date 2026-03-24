@@ -10,6 +10,6 @@ export class CreateTopicDto {
   @MaxLength(500)
   description?: string;
 
-  @IsUUID()
+  @IsString()
   subjectId: string;
 }

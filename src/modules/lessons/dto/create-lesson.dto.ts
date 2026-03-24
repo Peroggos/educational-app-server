@@ -16,7 +16,7 @@ export class CreateLessonDto {
   @Max(100)
   order: number;
 
-  @IsUUID()
+  @IsString()
   topicId: string;
 
   @IsString()

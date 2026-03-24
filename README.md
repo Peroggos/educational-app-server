@@ -1,98 +1,769 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+#  **Документация API Образовательной Платформы**
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+##  **Общая информация**
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+### **Базовый URL**
+```
+http://localhost:3000/api
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+### **Аутентификация**
+Большинство эндпоинтов требуют JWT токен. Токен передается в заголовке:
+```
+Authorization: Bearer <your_jwt_token>
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### **Формат ответов**
+Все успешные ответы обернуты в объект:
+```json
+{
+  "data": { ... },
+  "timestamp": "2026-03-24T10:00:00.000Z",
+  "path": "/api/endpoint"
+}
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+Ошибки возвращаются в формате:
+```json
+{
+  "statusCode": 400,
+  "timestamp": "2026-03-24T10:00:00.000Z",
+  "path": "/api/endpoint",
+  "message": "Описание ошибки"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### **Роли пользователей**
+- `STUDENT` - студент (базовые права)
+- `TEACHER` - учитель (создание контента)
+- `ADMIN` - администратор (полный доступ)
 
-## Resources
+---
 
-Check out a few resources that may come in handy when working with NestJS:
+## **Аутентификация (Auth)**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### **Регистрация**
+```http
+POST /auth/register
+```
 
-## Support
+**Тело запроса:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123",
+  "firstName": "Имя",
+  "lastName": "Фамилия",
+  "role": "STUDENT"  // STUDENT, TEACHER, ADMIN
+}
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Успешный ответ (201):**
+```json
+{
+  "data": {
+    "user": {
+      "id": "cuid...",
+      "email": "user@example.com",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "role": "STUDENT",
+      "createdAt": "2026-03-24T10:00:00.000Z"
+    },
+    "access_token": "eyJhbGciOiJIUzI1NiIs..."
+  }
+}
+```
 
-## Stay in touch
+### **Вход**
+```http
+POST /auth/login
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Тело запроса:**
+```json
+{
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
 
-## License
+**Успешный ответ (201):**
+```json
+{
+  "data": {
+    "user": {
+      "id": "cuid...",
+      "email": "user@example.com",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "role": "STUDENT"
+    },
+    "access_token": "eyJhbGciOiJIUzI1NiIs..."
+  }
+}
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+## **Пользователи (Users)**
+
+### **Мой профиль**
+```http
+GET /users/profile
+```
+**Требует авторизацию**
+
+**Успешный ответ (200):**
+```json
+{
+  "data": {
+    "id": "cuid...",
+    "email": "user@example.com",
+    "firstName": "Имя",
+    "lastName": "Фамилия",
+    "role": "STUDENT",
+    "createdAt": "2026-03-24T10:00:00.000Z",
+    "updatedAt": "2026-03-24T10:00:00.000Z"
+  }
+}
+```
+
+### **Все пользователи (только ADMIN)**
+```http
+GET /users
+```
+**Требует авторизацию**
+
+### **Пользователь по ID (только ADMIN)**
+```http
+GET /users/:id
+```
+
+### **Обновить пользователя (только ADMIN)**
+```http
+PATCH /users/:id
+```
+
+**Тело запроса:**
+```json
+{
+  "firstName": "Новое имя",
+  "lastName": "Новая фамилия",
+  "role": "TEACHER"
+}
+```
+
+### **Удалить пользователя (только ADMIN)**
+```http
+DELETE /users/:id
+```
+
+---
+
+##  **Предметы (Subjects)**
+
+### **Все предметы**
+```http
+GET /subjects
+```
+
+### **Предмет по ID**
+```http
+GET /subjects/:id
+```
+
+### **Создать предмет (TEACHER/ADMIN)**
+```http
+POST /subjects
+```
+
+**Тело запроса:**
+```json
+{
+  "name": "Математика",
+  "description": "Изучение чисел и формул"
+}
+```
+
+**Успешный ответ (201):**
+```json
+{
+  "data": {
+    "id": "cuid...",
+    "name": "Математика",
+    "description": "Изучение чисел и формул",
+    "createdAt": "2026-03-24T10:00:00.000Z",
+    "updatedAt": "2026-03-24T10:00:00.000Z"
+  }
+}
+```
+
+### **Обновить предмет (TEACHER/ADMIN)**
+```http
+PATCH /subjects/:id
+```
+
+### **Удалить предмет (ADMIN)**
+```http
+DELETE /subjects/:id
+```
+
+---
+
+##  **Темы (Topics)**
+
+### **Все темы**
+```http
+GET /topics?subjectId=:subjectId
+```
+Параметр `subjectId` опционален для фильтрации по предмету.
+
+### **Тема по ID**
+```http
+GET /topics/:id
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "data": {
+    "id": "cuid...",
+    "name": "Алгебра",
+    "description": "Уравнения и функции",
+    "subjectId": "cuid...",
+    "subject": {
+      "id": "cuid...",
+      "name": "Математика"
+    },
+    "questions": [...],
+    "lessons": [...],
+    "_count": {
+      "questions": 5,
+      "lessons": 3
+    }
+  }
+}
+```
+
+### **Статистика темы**
+```http
+GET /topics/stats/:id
+```
+**Требует авторизацию (TEACHER/ADMIN)**
+
+**Успешный ответ (200):**
+```json
+{
+  "data": {
+    "topicId": "cuid...",
+    "topicName": "Алгебра",
+    "subjectName": "Математика",
+    "totalQuestions": 5,
+    "totalLessons": 3,
+    "studentsPracticed": 42,
+    "totalAnswers": 210,
+    "totalCorrect": 168,
+    "averageSuccessRate": 80,
+    "averageTestScore": 75
+  }
+}
+```
+
+### **Создать тему (TEACHER/ADMIN)**
+```http
+POST /topics
+```
+
+**Тело запроса:**
+```json
+{
+  "name": "Алгебра",
+  "description": "Уравнения и функции",
+  "subjectId": "cuid..."
+}
+```
+
+### **Обновить тему (TEACHER/ADMIN)**
+```http
+PATCH /topics/:id
+```
+
+### **Удалить тему (ADMIN)**
+```http
+DELETE /topics/:id
+```
+
+---
+
+##  **Вопросы (Questions)**
+
+### **Все вопросы**
+```http
+GET /questions?topicId=:topicId
+```
+Параметр `topicId` опционален для фильтрации по теме.
+
+### **Вопрос по ID**
+```http
+GET /questions/:id
+```
+
+### **Проверить ответ**
+```http
+POST /questions/:id/check
+```
+
+**Тело запроса:**
+```json
+{
+  "selectedOption": 1  // индекс выбранного варианта (0-based)
+}
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "data": {
+    "isCorrect": true,
+    "correctOption": 1,
+    "explanation": "2 + 2 = 4"
+  }
+}
+```
+
+### **Создать вопрос (TEACHER/ADMIN)**
+```http
+POST /questions
+```
+
+**Тело запроса:**
+```json
+{
+  "text": "Сколько будет 2 + 2?",
+  "options": ["3", "4", "5", "6"],
+  "correctOption": 1,
+  "explanation": "2 + 2 = 4",
+  "difficulty": "EASY",  // EASY, MEDIUM, HARD
+  "topicId": "cuid..."
+}
+```
+
+### **Обновить вопрос (TEACHER/ADMIN)**
+```http
+PATCH /questions/:id
+```
+
+### **Удалить вопрос (ADMIN)**
+```http
+DELETE /questions/:id
+```
+
+---
+
+##  **Уроки (Lessons)**
+
+### **Все уроки**
+```http
+GET /lessons?topicId=:topicId
+```
+
+### **Уроки по теме**
+```http
+GET /lessons/topic/:topicId
+```
+
+### **Урок по ID**
+```http
+GET /lessons/:id
+```
+
+### **Создать урок (TEACHER/ADMIN)**
+```http
+POST /lessons
+```
+
+**Тело запроса:**
+```json
+{
+  "title": "Введение в алгебру",
+  "description": "Первый урок",
+  "content": "Алгебра - это раздел математики...",
+  "order": 1,
+  "topicId": "cuid...",
+  "videoUrl": "https://youtube.com/watch?v=...",
+  "duration": 45
+}
+```
+
+### **Обновить урок (TEACHER/ADMIN)**
+```http
+PATCH /lessons/:id
+```
+
+### **Изменить порядок уроков**
+```http
+PATCH /lessons/reorder/:topicId
+```
+
+**Тело запроса:**
+```json
+[
+  {"id": "lesson_id_1", "order": 1},
+  {"id": "lesson_id_2", "order": 2},
+  {"id": "lesson_id_3", "order": 3}
+]
+```
+
+### **Удалить урок (ADMIN)**
+```http
+DELETE /lessons/:id
+```
+
+---
+
+##  **Тесты (Tests)**
+
+### **Все тесты**
+```http
+GET /tests
+```
+
+### **Тест по ID**
+```http
+GET /tests/:id
+```
+
+### **Тесты по теме**
+```http
+GET /tests/topic/:topicId
+```
+
+### **Начать тест**
+```http
+POST /tests/:id/start
+```
+или
+```http
+POST /tests/start
+```
+
+**Тело запроса (для второго варианта):**
+```json
+{
+  "testId": "cuid..."
+}
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "data": {
+    "session": {
+      "id": "cuid...",
+      "testId": "cuid...",
+      "startedAt": "2026-03-24T10:00:00.000Z",
+      "totalQuestions": 10
+    },
+    "test": {
+      "id": "cuid...",
+      "name": "Тест по алгебре",
+      "timeLimit": 30
+    },
+    "questions": [...]
+  }
+}
+```
+
+### **Отправить ответы**
+```http
+POST /tests/submit
+```
+
+**Тело запроса:**
+```json
+{
+  "testId": "cuid...",
+  "answers": [
+    {"questionId": "cuid_1", "selectedOption": 2},
+    {"questionId": "cuid_2", "selectedOption": 0}
+  ]
+}
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "data": {
+    "id": "cuid...",
+    "score": 80,
+    "totalQuestions": 10,
+    "answers": [...],
+    "completedAt": "2026-03-24T10:30:00.000Z"
+  }
+}
+```
+
+### **Мои результаты**
+```http
+GET /tests/my-results
+```
+
+### **Таблица лидеров**
+```http
+GET /tests/leaderboard?limit=10
+```
+
+### **Результаты теста (TEACHER/ADMIN)**
+```http
+GET /tests/:id/results
+```
+
+### **Создать тест (TEACHER/ADMIN)**
+```http
+POST /tests
+```
+
+**Тело запроса:**
+```json
+{
+  "name": "Тест по алгебре",
+  "description": "Проверка знаний",
+  "timeLimit": 30,
+  "questionIds": ["cuid_1", "cuid_2", "cuid_3"]
+}
+```
+
+### **Обновить тест (TEACHER/ADMIN)**
+```http
+PATCH /tests/:id
+```
+
+### **Удалить тест (ADMIN)**
+```http
+DELETE /tests/:id
+```
+
+---
+
+##  **Прогресс (Progress)**
+
+### **Мой прогресс**
+```http
+GET /progress
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "data": [
+    {
+      "id": "cuid...",
+      "topicId": "cuid...",
+      "topic": {
+        "name": "Алгебра",
+        "subject": {"name": "Математика"}
+      },
+      "questionsAnswered": 10,
+      "correctAnswers": 8,
+      "successRate": 80,
+      "totalQuestions": 15,
+      "remainingQuestions": 5,
+      "lastPracticed": "2026-03-24T10:00:00.000Z"
+    }
+  ]
+}
+```
+
+### **Статистика**
+```http
+GET /progress/stats
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "data": {
+    "totalQuestionsAnswered": 150,
+    "totalCorrectAnswers": 120,
+    "overallSuccessRate": 80,
+    "topicsPracticed": 5,
+    "achievements": 3,
+    "averageScore": 75,
+    "recentTests": [...]
+  }
+}
+```
+
+### **Мои достижения**
+```http
+GET /progress/achievements
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "data": [
+    {
+      "id": "cuid...",
+      "name": "Начинающий",
+      "description": "Ответить на 10 вопросов",
+      "icon": "",
+      "unlocked": true,
+      "progress": 100,
+      "current": 10,
+      "target": 10
+    }
+  ]
+}
+```
+
+### **Прогресс по предмету**
+```http
+GET /progress/subject/:subjectId
+```
+
+### **Прогресс по теме**
+```http
+GET /progress/topic/:topicId
+```
+
+### **Обновить прогресс**
+```http
+POST /progress/update
+```
+
+**Тело запроса:**
+```json
+{
+  "topicId": "cuid...",
+  "questionsAnswered": 5,
+  "correctAnswers": 4
+}
+```
+
+### **Проверить достижения**
+```http
+POST /progress/check-achievements
+```
+
+---
+
+##  **Health Check**
+
+### **Проверка здоровья**
+```http
+GET /health
+```
+```http
+GET /api/health
+```
+
+**Успешный ответ (200):**
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-03-24T10:00:00.000Z",
+  "services": {
+    "api": "up",
+    "database": "connected"
+  }
+}
+```
+
+---
+
+##  **Коды ответов**
+
+| Код | Описание |
+|-----|----------|
+| 200 | Успешно (GET, PATCH) |
+| 201 | Создано (POST) |
+| 400 | Неверный запрос |
+| 401 | Не авторизован |
+| 403 | Доступ запрещен |
+| 404 | Не найдено |
+| 409 | Конфликт (уже существует) |
+| 500 | Внутренняя ошибка сервера |
+
+---
+
+##  **Примеры использования**
+
+### **Полный цикл работы с контентом**
+
+```bash
+#!/bin/bash
+BASE_URL="http://localhost:3000/api"
+
+# 1. Регистрация учителя
+TEACHER_TOKEN=$(curl -s -X POST "$BASE_URL/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "teacher@example.com",
+    "password": "password123",
+    "firstName": "Иван",
+    "lastName": "Петров",
+    "role": "TEACHER"
+  }' | jq -r '.data.access_token')
+
+# 2. Создать предмет
+SUBJECT_ID=$(curl -s -X POST "$BASE_URL/subjects" \
+  -H "Authorization: Bearer $TEACHER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Математика",
+    "description": "Изучение чисел и формул"
+  }' | jq -r '.data.id')
+
+# 3. Создать тему
+TOPIC_ID=$(curl -s -X POST "$BASE_URL/topics" \
+  -H "Authorization: Bearer $TEACHER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"name\": \"Алгебра\",
+    \"description\": \"Уравнения и функции\",
+    \"subjectId\": \"$SUBJECT_ID\"
+  }" | jq -r '.data.id')
+
+# 4. Создать вопрос
+QUESTION_ID=$(curl -s -X POST "$BASE_URL/questions" \
+  -H "Authorization: Bearer $TEACHER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"text\": \"Чему равно 2 + 2 × 2?\",
+    \"options\": [\"4\", \"6\", \"8\", \"10\"],
+    \"correctOption\": 1,
+    \"difficulty\": \"MEDIUM\",
+    \"topicId\": \"$TOPIC_ID\"
+  }" | jq -r '.data.id')
+
+# 5. Создать урок
+LESSON_ID=$(curl -s -X POST "$BASE_URL/lessons" \
+  -H "Authorization: Bearer $TEACHER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"title\": \"Введение в алгебру\",
+    \"content\": \"Алгебра - это раздел математики...\",
+    \"order\": 1,
+    \"topicId\": \"$TOPIC_ID\"
+  }" | jq -r '.data.id')
+
+# 6. Создать тест
+TEST_ID=$(curl -s -X POST "$BASE_URL/tests" \
+  -H "Authorization: Bearer $TEACHER_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"name\": \"Тест по алгебре\",
+    \"timeLimit\": 30,
+    \"questionIds\": [\"$QUESTION_ID\"]
+  }" | jq -r '.data.id')
+
+echo " Контент создан!"
+echo "Предмет: $SUBJECT_ID"
+echo "Тема: $TOPIC_ID"
+echo "Вопрос: $QUESTION_ID"
+echo "Урок: $LESSON_ID"
+echo "Тест: $TEST_ID"
+```
+
+---
